@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getCurrentUser } from "@/lib/auth";
 
 type Product = {
   productId: string;
@@ -78,6 +79,13 @@ export default function IssuePage() {
     try {
       setSubmitting(true);
 
+      const currentUser = getCurrentUser();
+
+      if (!currentUser) {
+        setMessage("กรุณาเข้าสู่ระบบก่อน");
+        return;
+      }
+
       const response = await fetch("/api/stock/issue", {
         method: "POST",
         headers: {
@@ -86,7 +94,7 @@ export default function IssuePage() {
         body: JSON.stringify({
           productId,
           quantity: amount,
-          userId: "user001",
+          userId: currentUser.userId,
         }),
       });
 

@@ -1,6 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
+import { getCurrentUser } from "@/lib/auth";
+import RoleGuard from "@/components/RoleGuard";
 
 type Product = {
   productId: string;
@@ -62,6 +63,13 @@ export default function ReceivePage() {
     try {
       setSubmitting(true);
 
+      const currentUser = getCurrentUser();
+
+      if (!currentUser) {
+        setMessage("กรุณาเข้าสู่ระบบก่อน");
+        return;
+      }
+
       const response = await fetch("/api/stock/receive", {
         method: "POST",
         headers: {
@@ -70,7 +78,7 @@ export default function ReceivePage() {
         body: JSON.stringify({
           productId,
           quantity: amount,
-          userId: "user001",
+          userId: currentUser.userId,
         }),
       });
 
